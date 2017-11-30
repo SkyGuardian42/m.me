@@ -48,20 +48,37 @@ boxes.forEach(el => {
 
 
 //--------------------
-//  Popup About Page  
+//  Popup Page  
 //--------------------
 
 // get all elements with a [toggle] attribute
 let toggles = document.querySelectorAll('[toggle]');
+let lastToggle = '';
 toggles.forEach(el => {
 	// add an event listener and toggle the .hide class on the target element
 	el.addEventListener('click', event => {
-		let target = document.getElementById(event.target.attributes.toggle.value);
-		target.classList.toggle('hide');
+		let targetDiv = document.getElementById(event.target.attributes.toggle.value);
+		let targetName = event.target.attributes.toggle.value;
+
+		if(targetDiv.classList.contains('hide')) {
+			window.history.pushState({action: 'window opened'}, 'windowOpened: ' + targetName, targetName);
+			lastToggle = targetName;
+			targetDiv.classList.toggle('hide');
+		} else {
+			window.history.go(-1);
+		}
+
 	});
 }) 
 
+window.onpopstate = function(event) {
+	document.getElementById(lastToggle).classList.toggle('hide');
+}
 
+//---------------------------------------------
+//  Resize viewport
+//	because 100vh is behaving weird on mobile
+//---------------------------------------------
 function calcVH () {
 	var targets = ['body', '.main', '.about'];
 	var vH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
